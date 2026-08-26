@@ -27,16 +27,16 @@ FROM eclipse-temurin:21-jre-jammy AS runtime
 ARG MODULE
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y curl \
+    && apt-get install --no-install-recommends -y curl gosu \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --system spring \
     && useradd --system --gid spring --home-dir /app spring
 
 WORKDIR /app
 COPY --from=builder --chown=spring:spring /workspace/${MODULE}/target/${MODULE}-1.0.0-SNAPSHOT.jar app.jar
-
-USER spring:spring
+COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["java", "-jar", "/app/app.jar"]

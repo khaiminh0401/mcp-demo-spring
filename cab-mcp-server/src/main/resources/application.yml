@@ -3,6 +3,20 @@ server:
 spring:
   application:
     name: cab-mcp-server
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./data/cab/cabdb;DB_CLOSE_ON_EXIT=FALSE}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+  sql:
+    init:
+      mode: always
   ai:
     mcp:
       server:

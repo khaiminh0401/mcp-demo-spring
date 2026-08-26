@@ -13,6 +13,8 @@ Demo Java 21 gồm một agent dùng Gemini và ba MCP server độc lập kết
 
 PoC giữ Spring Boot 3.4 và dùng Spring AI OpenAI client với endpoint OpenAI-compatible chính thức của Gemini. Không có khóa API nào được lưu trong mã nguồn.
 
+Ba MCP server sử dụng H2 file database riêng. Inventory được seed từ SQL và mọi booking được persist để có thể kiểm tra lại.
+
 ## Yêu cầu
 
 - JDK 21
@@ -108,6 +110,38 @@ Nếu muốn xóa cả các image local do project tạo:
 ```bash
 docker compose down --rmi local
 ```
+
+### Kiểm tra dữ liệu bằng H2 Console
+
+| Service | Console | JDBC URL khi chạy Docker |
+|---|---|---|
+| Flight | http://localhost:8081/h2-console | `jdbc:h2:file:/data/flightdb` |
+| Hotel | http://localhost:8082/h2-console | `jdbc:h2:file:/data/hoteldb` |
+| Cab | http://localhost:8083/h2-console | `jdbc:h2:file:/data/cabdb` |
+
+Đăng nhập bằng user `sa`, password để trống. Khi chạy trực tiếp bằng Maven, JDBC URL lần lượt là:
+
+- `jdbc:h2:file:./data/flight/flightdb`
+- `jdbc:h2:file:./data/hotel/hoteldb`
+- `jdbc:h2:file:./data/cab/cabdb`
+
+Một số câu SQL kiểm tra:
+
+```sql
+SELECT * FROM FLIGHTS ORDER BY PRICE;
+SELECT * FROM FLIGHT_BOOKINGS ORDER BY BOOKED_AT DESC;
+SELECT * FROM HOTELS ORDER BY PRICE_PER_NIGHT;
+SELECT * FROM HOTEL_RESERVATIONS ORDER BY RESERVED_AT DESC;
+SELECT * FROM CAB_RIDES ORDER BY BOOKED_AT DESC;
+```
+
+Named volumes giữ dữ liệu khi container được recreate. Chỉ xóa database khi chủ động chạy:
+
+```bash
+docker compose down -v
+```
+
+H2 Console chỉ dành cho local/demo và không nên được mở ra internet.
 
 ## Lưu ý bảo mật
 

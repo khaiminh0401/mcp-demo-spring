@@ -24,6 +24,10 @@ services:
     image: travel-booking/flight-mcp-server:local
     ports:
       - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/flightdb;DB_CLOSE_ON_EXIT=FALSE
+    volumes:
+      - flight-data:/data
     healthcheck:
       <<: *healthcheck
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8081/actuator/health"]
@@ -38,6 +42,10 @@ services:
     image: travel-booking/hotel-mcp-server:local
     ports:
       - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/hoteldb;DB_CLOSE_ON_EXIT=FALSE
+    volumes:
+      - hotel-data:/data
     healthcheck:
       <<: *healthcheck
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8082/actuator/health"]
@@ -52,6 +60,10 @@ services:
     image: travel-booking/cab-mcp-server:local
     ports:
       - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/cabdb;DB_CLOSE_ON_EXIT=FALSE
+    volumes:
+      - cab-data:/data
     healthcheck:
       <<: *healthcheck
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8083/actuator/health"]
@@ -82,3 +94,8 @@ services:
     healthcheck:
       <<: *healthcheck
       test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/actuator/health"]
+
+volumes:
+  flight-data:
+  hotel-data:
+  cab-data:

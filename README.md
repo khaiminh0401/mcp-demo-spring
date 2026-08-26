@@ -70,6 +70,45 @@ curl -X POST http://localhost:8080/api/travel/plan \
 
 Agent sẽ discover năm MCP tools và tự thực hiện chuỗi tìm kiếm/đặt chỗ. Vì đây là mock PoC, dữ liệu và mã xác nhận chỉ dùng để minh họa.
 
+## Chạy toàn bộ bằng Docker Compose
+
+Tạo file môi trường local và điền Gemini Developer API key:
+
+```bash
+cp .env.example .env
+```
+
+```dotenv
+GEMINI_API_KEY=your-real-gemini-api-key
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+Build và khởi động toàn bộ stack:
+
+```bash
+docker compose up --build
+```
+
+Compose đợi ba MCP server healthy trước khi khởi động `travel-agent`. Kiểm tra trạng thái và log:
+
+```bash
+docker compose ps
+docker compose logs -f travel-agent
+curl http://localhost:8080/actuator/health
+```
+
+Sau khi client healthy, dùng cURL ở phần **Gọi agent** phía trên. Dừng và xóa container/network:
+
+```bash
+docker compose down
+```
+
+Nếu muốn xóa cả các image local do project tạo:
+
+```bash
+docker compose down --rmi local
+```
+
 ## Lưu ý bảo mật
 
 Các endpoint MCP SSE không có authentication. Chỉ chạy trên máy local hoặc mạng demo tin cậy; cần đặt Spring Security/API gateway phía trước trước khi triển khai thật. SSE legacy được giữ theo yêu cầu demo; hệ thống mới nên cân nhắc MCP Streamable HTTP.

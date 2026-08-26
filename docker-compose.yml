@@ -1,0 +1,84 @@
+name: travel-booking-mcp
+
+x-service-defaults: &service-defaults
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  init: true
+
+x-healthcheck: &healthcheck
+  interval: 5s
+  timeout: 3s
+  retries: 20
+  start_period: 15s
+
+services:
+  flight:
+    <<: *service-defaults
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: flight-mcp-server
+    image: travel-booking/flight-mcp-server:local
+    ports:
+      - "8081:8081"
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8081/actuator/health"]
+
+  hotel:
+    <<: *service-defaults
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: hotel-mcp-server
+    image: travel-booking/hotel-mcp-server:local
+    ports:
+      - "8082:8082"
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8082/actuator/health"]
+
+  cab:
+    <<: *service-defaults
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: cab-mcp-server
+    image: travel-booking/cab-mcp-server:local
+    ports:
+      - "8083:8083"
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8083/actuator/health"]
+
+  travel-agent:
+    <<: *service-defaults
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: travel-client-agent
+    image: travel-booking/travel-client-agent:local
+    ports:
+      - "8080:8080"
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?Set GEMINI_API_KEY in .env}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      FLIGHT_MCP_URL: http://flight:8081
+      HOTEL_MCP_URL: http://hotel:8082
+      CAB_MCP_URL: http://cab:8083
+    depends_on:
+      flight:
+        condition: service_healthy
+      hotel:
+        condition: service_healthy
+      cab:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/actuator/health"]

@@ -1,6 +1,7 @@
 package com.example.travel.agent.api;
 
 import com.example.travel.agent.service.TravelAgentService;
+import com.example.travel.agent.service.TravelAgentResult;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,9 @@ public class TravelAgentController {
 
     @PostMapping("/plan")
     public ResponseEntity<TravelPlanResponse> plan(@Valid @RequestBody TravelPlanRequest request) {
-        String result = service.plan(request.getPrompt(), request.getUser());
-        return ResponseEntity.ok(TravelPlanResponse.builder().user(request.getUser()).result(result).build());
+        TravelAgentResult result = service.plan(request.getPrompt(), request.getUser());
+        return ResponseEntity.ok(TravelPlanResponse.builder()
+                .user(request.getUser()).model(result.model()).durationMs(result.durationMs())
+                .result(result.content()).build());
     }
 }

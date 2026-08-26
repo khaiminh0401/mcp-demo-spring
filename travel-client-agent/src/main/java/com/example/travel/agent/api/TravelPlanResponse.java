@@ -5,4 +5,9 @@ import lombok.Value;
 
 @Value
 @Builder
-public class TravelPlanResponse { String user; String result; }
+public class TravelPlanResponse {
+    String user;
+    String model;
+    long durationMs;
+    String result;
+}

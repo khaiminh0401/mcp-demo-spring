@@ -20,8 +20,8 @@
 
     <properties>
         <java.version>21</java.version>
-        <spring-boot.version>3.4.12</spring-boot.version>
-        <spring-ai.version>1.0.3</spring-ai.version>
+        <spring-boot.version>3.5.16</spring-boot.version>
+        <spring-ai.version>1.1.6</spring-ai.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

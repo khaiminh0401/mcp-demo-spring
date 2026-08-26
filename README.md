@@ -11,7 +11,7 @@ Demo Java 21 gồm một agent dùng Gemini và ba MCP server độc lập kết
 | `cab-mcp-server` | 8083 | `bookCab` |
 | `travel-client-agent` | 8080 | REST orchestrator + Gemini |
 
-PoC giữ Spring Boot 3.4 và dùng Spring AI OpenAI client với endpoint OpenAI-compatible chính thức của Gemini. Không có khóa API nào được lưu trong mã nguồn.
+PoC dùng Spring Boot 3.5, Spring AI Google GenAI native client và Gemini Developer API. Native client bảo toàn `thought_signature` trong chuỗi tool-calling của Gemini 3.1. Không có khóa API nào được lưu trong mã nguồn.
 
 Ba MCP server sử dụng H2 file database riêng. Inventory được seed từ SQL và mọi booking được persist để có thể kiểm tra lại.
 
@@ -57,7 +57,7 @@ java -jar cab-mcp-server/target/cab-mcp-server-1.0.0-SNAPSHOT.jar
 GEMINI_API_KEY="your-gemini-api-key" java -jar travel-client-agent/target/travel-client-agent-1.0.0-SNAPSHOT.jar
 ```
 
-Model mặc định là `gemini-2.5-flash`. Có thể đổi bằng `GEMINI_MODEL`. URL các server có thể đổi bằng `FLIGHT_MCP_URL`, `HOTEL_MCP_URL`, và `CAB_MCP_URL`.
+Model mặc định là `gemini-3.1-flash-lite`. Có thể đổi bằng `GEMINI_MODEL`. URL các server có thể đổi bằng `FLIGHT_MCP_URL`, `HOTEL_MCP_URL`, và `CAB_MCP_URL`.
 
 ## Gọi agent
 
@@ -82,7 +82,7 @@ cp .env.example .env
 
 ```dotenv
 GEMINI_API_KEY=your-real-gemini-api-key
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
 Build và khởi động toàn bộ stack:

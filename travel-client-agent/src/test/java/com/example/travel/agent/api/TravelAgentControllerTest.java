@@ -1,6 +1,7 @@
 package com.example.travel.agent.api;
 
 import com.example.travel.agent.service.TravelAgentService;
+import com.example.travel.agent.service.TravelAgentResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,10 +18,13 @@ class TravelAgentControllerTest {
     @MockitoBean TravelAgentService service;
 
     @Test void returnsAgentResult() throws Exception {
-        when(service.plan("Đi Đà Nẵng", "Nguyễn Văn An")).thenReturn("Đã đặt xong");
+        when(service.plan("Đi Đà Nẵng", "Nguyễn Văn An"))
+                .thenReturn(new TravelAgentResult("gemini-3.1-flash-lite", 1234, "Đã đặt xong"));
         mvc.perform(post("/api/travel/plan").contentType("application/json")
                         .content("{\"prompt\":\"Đi Đà Nẵng\",\"user\":\"Nguyễn Văn An\"}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.user").value("Nguyễn Văn An"))
+                .andExpect(jsonPath("$.model").value("gemini-3.1-flash-lite"))
+                .andExpect(jsonPath("$.durationMs").value(1234))
                 .andExpect(jsonPath("$.result").value("Đã đặt xong"));
     }
 
